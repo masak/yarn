@@ -1,0 +1,36 @@
+PERL6=<PERL6>
+PERL6LIB=<PERL6LIB>
+RAKUDO_DIR=<RAKUDO_DIR>
+
+SOURCES=lib/Example/Hello.pm
+
+
+PIRS=$(SOURCES:.pm=.pir)
+
+all: $(PIRS) lib/Test.pir
+
+%.pir: %.pm
+	$(PERL6) --target=pir --output=$@ $<
+
+lib/Test.pir: $(RAKUDO_DIR)/Test.pm $(PERL6)
+	$(PERL6) --target=pir --output=lib/Test.pir $(RAKUDO_DIR)/Test.pm
+
+clean:
+	rm -f $(PIRS)
+
+realclean: clean
+	rm Makefile
+
+test: all
+	PERL6LIB=$(PERL6LIB) prove -e '$(PERL6)' -r --nocolor t/
+
+help:
+	@echo ''
+	@echo 'You can make the following targets:'
+	@echo ''
+	@echo 'all       - default, precompile .pm to .pir for speed'
+	@echo 'clean     - removes .pir and backup~ files'
+	@echo 'realclean - clean and also remove Makefile'
+	@echo 'test      - verify that the code works as specified'
+	@echo 'help      - this text.'
+	@echo ''
