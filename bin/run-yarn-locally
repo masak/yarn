@@ -6,14 +6,22 @@ defined @*ARGS[0] && @*ARGS[0] eq '--request' ?? request() !! daemon();
 # Serve one page
 sub request($c) {
     my $r = $c.get_request;
+    warn "{hhmm} {$r.req_method} {$r.url.path} {$r.header('User-Agent')}";
     if $r.req_method eq 'GET' {
-        # log request info to the standard error stream
-        warn "{hhmm} GET {$r.url.path} {$r.header('User-Agent')}";
         my $qs = $r.url.path ~~ / '?' (.*) $/
-                    ?? $0
+                    ?? ~$0
                     !! '';
         $c.send_response(
             ~([~] Yarn.call({"QUERY_STRING" => $qs}).[2])
+        );
+    }
+    elsif $r.req_method eq 'POST' {
+        my $qs = $r.url.path ~~ / '?' (.*) $/
+                    ?? ~$0
+                    !! '';
+        $c.send_response(
+            ~([~] Yarn.call({"REQUEST_METHOD" => 'POST',
+                             "QUERY_STRING" => $qs}).[2])
         );
     }
     else {
