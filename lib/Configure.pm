@@ -44,7 +44,11 @@ else {
 }
 
 say "PERL6       $perl6";
-my $perl6lib = %*ENV<PWD> ~ '/lib';
+warn %*ENV<PERL6LIB>;
+warn %*ENV<PWD> ~ '/lib';
+my $perl6lib = ?%*ENV<PERL6LIB>.index(%*ENV<PWD> ~ '/lib')
+                   ?? %*ENV<PERL6LIB>
+                   !! %*ENV<PWD> ~ '/lib';
 say "PERL6LIB    $perl6lib";
 # The perl6-examples/bin directory is a sibling of PERL6LIB
 my $perl6bin = $perl6lib.subst( '/lib', '/bin' );
@@ -67,12 +71,7 @@ squirt( 'Makefile', $maketext );
 # Job done.
 .say for
     '',
-    q[Makefile is ready, running 'make' on it.];
-run('make');
-.say for
-    q[Configure and 'make' have finished. ]
-    ~ q[Use 'make help' to view other options.],
-    '';
+    q[Makefile is ready, you can now run 'make' on it.];
 
 
 # The opposite of slurp
