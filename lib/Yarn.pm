@@ -10,19 +10,24 @@ class Yarn {
         my Web::Request $req .= new($env);
         my Web::Response $res .= new;
 
-        if $req.request_method eq 'POST' {
-            my $fh = open('data/posts', :w) or die $!;
-            $fh.print( [ { title => 'test', content => '1, 2, 3' } ].perl );
-            $fh.close;
-        }
-
         given $req.GET<mode> // '' {
+            # XXX: Workaround. Want POST here.
+            when $req.GET<title> ne '' {
+                my $p = $req.GET;
+                my $fh = open('data/posts', :w) or die $!;
+                $fh.print( [ { title => $p<title>,
+                               content => $p<content> } ].perl );
+                $fh.close;
+            }
+
             when 'write' {
                 $res.write(show {
                     html { title { 'Writing a post' } }
                     body {
-                        form :action</>, :method<post>, {
-                            input :type<submit>, {};
+                        form :action</?mode=create>, :method<get>, {
+                            p { input :name<title>, { '' } }
+                            p { textarea :name<content>, { '' } }
+                            p { input :type<submit>, { '' } }
                         }
                     }
                 });
