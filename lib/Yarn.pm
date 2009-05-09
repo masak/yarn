@@ -17,9 +17,11 @@ class Yarn {
                 unless 'data' ~~ :d {
                     run('mkdir data');
                 }
+                my @posts = get-posts();
+                @posts.unshift( { title => $p<title>,
+                               content => $p<content> } );
                 my $fh = open('data/posts', :w) or die $!;
-                $fh.print( [ { title => $p<title>,
-                               content => $p<content> } ].perl );
+                $fh.print( @posts.perl );
                 $fh.close;
             }
 
@@ -37,9 +39,7 @@ class Yarn {
             }
 
             default {
-                my @posts = 'data/posts' ~~ :f
-                            ?? eval(slurp('data/posts')).list
-                            !! ();
+                my @posts = get-posts();
 
                 $res.write(show {
                     html {
@@ -61,5 +61,11 @@ class Yarn {
         }
 
         $res.finish();
+    }
+
+    sub get-posts() {
+        'data/posts' ~~ :f
+            ?? eval(slurp('data/posts')).list
+            !! ()
     }
 }
