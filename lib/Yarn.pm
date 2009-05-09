@@ -14,6 +14,9 @@ class Yarn {
             # XXX: Workaround. Want POST here.
             when $req.GET<title> ne '' {
                 my $p = $req.GET;
+                unless 'data' ~~ :d {
+                    run('mkdir data');
+                }
                 my $fh = open('data/posts', :w) or die $!;
                 $fh.print( [ { title => $p<title>,
                                content => $p<content> } ].perl );
@@ -34,9 +37,9 @@ class Yarn {
             }
 
             default {
-                my @posts =
-                    { title => "foo", content => "foo content" },
-                    { title => "bar", content => "bar content" };
+                my @posts = 'data/posts' ~~ :f
+                            ?? eval(slurp('data/posts')).list
+                            !! ();
 
                 $res.write(show {
                     html {
