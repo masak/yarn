@@ -3,6 +3,5 @@
     "version"     : "*",
     "description" : "A proof-of-concept blogging application using Perl 6's Web.pm",
     "depends"     : ["Web"],
-    "repo-type"   : "git",
-    "repo-url"    : "git://github.com/masak/yarn.git"
+    "source-url"    : "git://github.com/masak/yarn.git"
 }
