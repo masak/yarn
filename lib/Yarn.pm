@@ -3,7 +3,7 @@ use v6;
 use Web::Request;
 use Web::Response;
 
-use Tags;
+use Yarn::Tags;
 
 class Yarn {
     method call($env) {
